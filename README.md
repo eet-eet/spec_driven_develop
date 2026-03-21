@@ -105,6 +105,10 @@ spec_driven_develop/
 └── LICENSE
 ```
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=zhu1090093659/spec_driven_develop&type=Date)](https://star-history.com/#zhu1090093659/spec_driven_develop&Date)
+
 ## License
 
 MIT
