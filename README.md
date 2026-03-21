@@ -107,8 +107,13 @@ spec_driven_develop/
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=zhu1090093659/spec_driven_develop&type=Date)](https://star-history.com/#zhu1090093659/spec_driven_develop&Date)
-
+<a href="https://www.star-history.com/?repos=zhu1090093659%2Fspec_driven_develop&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=zhu1090093659/spec_driven_develop&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=zhu1090093659/spec_driven_develop&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=zhu1090093659/spec_driven_develop&type=date&legend=top-left" />
+ </picture>
+</a>
 ## License
 
 MIT
