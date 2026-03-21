@@ -16,5 +16,6 @@ echo ""
 
 echo "=== Done ==="
 echo ""
-echo "For Claude Code: add this repository as a plugin source."
-echo "  The plugin will be loaded automatically from the repo structure."
+echo "For Claude Code:"
+echo "  /plugin marketplace add zhu1090093659/spec_driven_develop"
+echo "  /plugin install spec-driven-develop@spec-driven-develop"

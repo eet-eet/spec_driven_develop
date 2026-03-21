@@ -14,33 +14,49 @@ The entire workflow is document-driven: a master progress file serves as the age
 
 ## Supported Platforms
 
-- **Cursor** — installed as a global or project-level skill
-- **Codex (OpenAI)** — installed as a skill
 - **Claude Code** — installed as a plugin (with enhanced agent/command support)
+- **Codex (OpenAI)** — installed as a skill
+- **Cursor** — installed as a global or project-level skill
 
 ## Installation
+
+### Claude Code
+
+Add the marketplace and install the plugin:
+
+```
+/plugin marketplace add zhu1090093659/spec_driven_develop
+/plugin install spec-driven-develop@spec-driven-develop
+```
+
+After installation, run `/reload-plugins` to activate.
+
+### Codex CLI
+
+Use the built-in skill installer (inside a Codex session):
+
+```
+$skill-installer install https://github.com/zhu1090093659/spec_driven_develop/tree/main/plugins/spec-driven-develop/skills/spec-driven-develop
+```
+
+Or install via shell:
+
+```bash
+bash <(curl -sL https://raw.githubusercontent.com/zhu1090093659/spec_driven_develop/main/scripts/install-codex.sh)
+```
 
 ### Cursor
 
 ```bash
-bash scripts/install-cursor.sh
+bash <(curl -sL https://raw.githubusercontent.com/zhu1090093659/spec_driven_develop/main/scripts/install-cursor.sh)
 ```
 
-Or manually copy `skills/spec-driven-develop/` to `~/.cursor/skills/spec-driven-develop/`.
-
-### Codex
+Or clone the repo and run locally:
 
 ```bash
-bash scripts/install-codex.sh
+git clone https://github.com/zhu1090093659/spec_driven_develop.git
+bash spec_driven_develop/scripts/install-cursor.sh
 ```
-
-Or manually copy `skills/spec-driven-develop/` to `~/.codex/skills/spec-driven-develop/`.
-
-### Claude Code
-
-Add this repository as a plugin source. Claude Code will automatically load the skills, agents, and commands defined here.
-
-Alternatively, use the `/install-plugin` command in Claude Code to install from the GitHub repository URL.
 
 ## Usage
 
@@ -69,15 +85,18 @@ When all tasks are marked complete in the master progress file, the agent enters
 
 ```
 spec_driven_develop/
-├── .claude-plugin/plugin.json         # Claude Code plugin metadata
-├── skills/spec-driven-develop/
-│   ├── SKILL.md                       # Core skill (works on all platforms)
-│   └── references/doc-templates.md    # Document templates
-├── agents/                            # Claude Code sub-agents
-│   ├── project-analyzer.md
-│   └── task-architect.md
-├── commands/spec-dev.md               # /spec-dev slash command (Claude Code)
-├── scripts/                           # Installation scripts
+├── .claude-plugin/
+│   └── marketplace.json                   # Claude Code marketplace catalog
+├── plugins/spec-driven-develop/           # Self-contained Claude Code plugin
+│   ├── .claude-plugin/plugin.json         # Plugin manifest
+│   ├── skills/spec-driven-develop/
+│   │   ├── SKILL.md                       # Core skill (works on all platforms)
+│   │   └── references/doc-templates.md    # Document templates
+│   ├── agents/                            # Claude Code sub-agents
+│   │   ├── project-analyzer.md
+│   │   └── task-architect.md
+│   └── commands/spec-dev.md               # /spec-dev slash command
+├── scripts/                               # Installation scripts
 │   ├── install-cursor.sh
 │   ├── install-codex.sh
 │   └── install-all.sh
