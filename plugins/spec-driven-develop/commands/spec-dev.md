@@ -37,10 +37,12 @@ Get explicit confirmation before proceeding.
 
 ### Phase 1: Deep Project Analysis
 
-Launch 2-3 `project-analyzer` agents in parallel, each focusing on a different aspect:
-- Agent 1: Overall architecture, tech stack, and entry points
-- Agent 2: Module inventory with dependency mapping
-- Agent 3: Transformation risks and complexity hotspots
+Launch 2-3 `project-analyzer` agents **in parallel**, each focusing on a different aspect:
+- **Agent 1 — Architecture & Stack**: Project structure, directory layout, technology stack, entry points, build/run commands
+- **Agent 2 — Module Inventory**: Each module's responsibility, public API surface, size, internal/external dependencies
+- **Agent 3 — Risks & Patterns**: Transformation risks, complexity hotspots, platform-specific code, coding conventions
+
+Provide each agent with the confirmed task definition from Phase 0. If sub-agents are unavailable, perform analysis sequentially.
 
 Consolidate findings into `docs/analysis/`:
 - `project-overview.md`
@@ -49,13 +51,14 @@ Consolidate findings into `docs/analysis/`:
 
 ### Phase 2: Task Decomposition
 
-Launch 1-2 `task-architect` agents with the analysis results:
-- Provide the full analysis output and the confirmed task definition
-- Request a phased breakdown with dependency graph
+Launch 1-2 `task-architect` agents with the full analysis output:
+- If the project warrants it, launch 2 agents exploring different decomposition strategies and pick the better result
+- Each agent must produce **parallel execution lanes** — groups of independent tasks per phase that can run simultaneously
+- Each lane must include a merge risk rating (Low/Medium/High based on file overlap)
 
 Write to `docs/plan/`:
-- `task-breakdown.md`
-- `dependency-graph.md`
+- `task-breakdown.md` — includes parallel lane assignments per phase
+- `dependency-graph.md` — Mermaid diagram with parallel lanes as subgraphs
 - `milestones.md`
 
 ### Phase 3: Progress Tracking Documentation
@@ -73,6 +76,7 @@ Use the templates defined in the `spec-driven-develop` skill's `references/doc-t
    - Cross-conversation continuity protocol (read MASTER.md first)
    - Target technology coding standards
    - Progress update instructions
+   - **Parallel execution protocol**: At each phase start, read parallel lanes from `task-breakdown.md` and launch `task-executor` sub-agents for independent lanes simultaneously. Use worktree isolation when available.
    - Cleanup trigger when all tasks complete
 
 ### Phase 5: Handoff
@@ -93,3 +97,5 @@ When all checkboxes in MASTER.md are done:
 - Never skip phases. Confirm at each boundary.
 - Update progress docs after every completed task.
 - New conversation = read MASTER.md first, always.
+- Prefer parallel execution: when a phase has multiple independent lanes, launch `task-executor` agents simultaneously rather than working sequentially.
+- After parallel execution, always run the full test suite to verify combined changes are coherent.

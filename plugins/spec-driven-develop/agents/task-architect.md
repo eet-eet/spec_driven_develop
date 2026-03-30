@@ -60,7 +60,19 @@ Produce a Mermaid diagram showing:
 - Critical path: the longest dependency chain
 - Parallelizable tasks within each phase
 
-### 5. Milestone Definition
+### 5. Parallel Execution Lanes
+
+For each phase, identify **parallel lanes** — groups of tasks that have no mutual dependencies and can be executed simultaneously by separate sub-agents.
+
+For each lane:
+- **Lane ID**: e.g. `P2-Lane-A`, `P2-Lane-B`
+- **Tasks**: Which tasks belong to this lane
+- **Estimated time**: Combined effort of the lane (determines wall-clock time for the phase)
+- **Merge risk**: Low / Medium / High — likelihood of merge conflicts between lanes (based on file overlap)
+
+The goal is to minimize wall-clock time per phase. If a phase has 4 tasks and 2 are independent, they form 2 parallel lanes — cutting phase duration roughly in half.
+
+### 6. Milestone Definition
 
 Define milestones at natural phase boundaries. Each milestone should represent a meaningful achievement:
 - "Core library compiled and passing unit tests"
@@ -76,8 +88,11 @@ Define milestones at natural phase boundaries. Each milestone should represent a
 ## Phase Breakdown
 (for each phase: goal, tasks with all fields, estimated total effort)
 
+## Parallel Execution Lanes
+(for each phase: lane groupings with task lists, merge risk assessment)
+
 ## Dependency Graph
-(Mermaid diagram)
+(Mermaid diagram — use colors or subgraphs to visualize parallel lanes)
 
 ## Milestones
 (table with milestone name, target phase, criteria)

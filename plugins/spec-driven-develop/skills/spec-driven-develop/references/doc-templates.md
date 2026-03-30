@@ -118,10 +118,19 @@ docs/
 **Goal**: What this phase achieves
 **Prerequisite**: What must be done before this phase
 
-| # | Task | Priority | Effort | Depends On | Acceptance Criteria |
-|:--|:-----|:---------|:-------|:-----------|:--------------------|
-| 1 |      | P0       | M      | —          |                     |
-| 2 |      | P1       | S      | 1          |                     |
+| # | Task | Priority | Effort | Depends On | Lane | Acceptance Criteria |
+|:--|:-----|:---------|:-------|:-----------|:-----|:--------------------|
+| 1 |      | P0       | M      | —          | A    |                     |
+| 2 |      | P1       | S      | —          | B    |                     |
+| 3 |      | P1       | S      | 1          | A    |                     |
+
+### Parallel Lanes
+| Lane | Tasks | Combined Effort | Merge Risk | Key Files |
+|:-----|:------|:----------------|:-----------|:----------|
+| A    | 1, 3  | M               | —          |           |
+| B    | 2     | S               | Low        |           |
+
+> Tasks in different lanes have no mutual dependencies and can be executed simultaneously by separate `task-executor` sub-agents. Merge risk indicates the likelihood of file conflicts between lanes.
 
 ## Phase 2: <Phase Name>
 <!-- Same structure as Phase 1 -->
@@ -255,4 +264,32 @@ When generating a task-specific sub-SKILL in Phase 4, delegate to the platform's
   2. Target technology coding standards and conventions
   3. Progress update instructions (how to update checkboxes and MASTER.md)
   4. Phase-specific development guidance
-  5. Cleanup trigger (when all tasks done, initiate cleanup)
+  5. Parallel execution protocol (see below)
+  6. Cleanup trigger (when all tasks done, initiate cleanup)
+
+### Parallel Execution Protocol (for sub-SKILL)
+
+The generated sub-SKILL should include this protocol for leveraging parallel development:
+
+```
+## Parallel Execution
+
+At the start of each development phase:
+
+1. Read `docs/plan/task-breakdown.md` and locate the current phase's **Parallel Lanes** table.
+2. If the phase has multiple lanes:
+   - Launch one `task-executor` sub-agent per lane in a **single message** (enables true parallelism).
+   - Provide each agent with: task IDs, descriptions, acceptance criteria, relevant source files, and coding standards.
+   - Use worktree isolation if available to prevent file conflicts.
+3. If the phase has only one lane, execute tasks sequentially — do not force parallelism.
+4. After all agents return:
+   - Verify each reported DONE (re-launch any BLOCKED agents after resolving their blocker).
+   - Merge worktree changes sequentially if applicable.
+   - Run the full test suite to verify combined changes.
+   - Reconcile progress file updates and update MASTER.md with accurate counts.
+
+Merge risk safeguards:
+- **Low**: Merge freely.
+- **Medium**: Merge sequentially, test between each merge.
+- **High**: Prefer sequential execution or use worktree isolation with careful conflict resolution.
+```

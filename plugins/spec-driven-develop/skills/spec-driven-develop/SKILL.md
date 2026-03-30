@@ -8,7 +8,7 @@ description: >-
   "迁移", "重构", "大规模", "规范驱动". Performs full project analysis, task decomposition,
   documentation generation, progress tracking setup, and task-specific sub-SKILL creation
   before any development begins.
-version: 1.1.0
+version: 1.2.0
 ---
 
 # Spec-Driven Develop
@@ -55,25 +55,19 @@ After loading your current state from MASTER.md, populate the platform's native 
 
 **Actions**:
 
-1. Analyze the project systematically:
-   - Project structure and directory layout
-   - Technology stack (languages, frameworks, build tools, dependency managers)
-   - Entry points and build/run commands
-   - Module inventory: each module's responsibility, public API surface, and approximate size
-   - Dependency graph: internal module dependencies and external library dependencies
-   - Code patterns: architectural patterns, design patterns, coding conventions in use
+1. Launch `project-analyzer` sub-agents **in parallel** to analyze the codebase concurrently. Split the work by focus area:
+   - **Agent 1 — Architecture & Stack**: Project structure, directory layout, technology stack, entry points, build/run commands
+   - **Agent 2 — Module Inventory**: Each module's responsibility, public API surface, size, internal/external dependencies
+   - **Agent 3 — Risks & Patterns**: Transformation risks, complexity hotspots, platform-specific code, coding conventions
 
-2. Assess transformation-specific concerns:
-   - Which modules will be most challenging to transform?
-   - What are the key risks (complex algorithms, platform-specific code, tight coupling)?
-   - Are there external integration points that constrain the approach?
+   Provide each agent with the confirmed task definition from Phase 0 so they can assess findings in context of the target transformation.
 
-3. Write analysis documents to `docs/analysis/`:
+   If sub-agents are not available on the current platform, perform the analysis sequentially yourself — the scope is the same either way.
+
+2. Consolidate agent outputs and resolve any contradictions or gaps. Write analysis documents to `docs/analysis/`:
    - `project-overview.md` — Architecture, tech stack, entry points, build system
    - `module-inventory.md` — Every module with: responsibility, dependencies, size, complexity rating
    - `risk-assessment.md` — Technical risks, compatibility risks, complexity hotspots
-
-**On Claude Code**: If available, launch `project-analyzer` sub-agents in parallel to speed up analysis across different areas of the codebase.
 
 **Output**: Complete `docs/analysis/` directory with three documents.
 
@@ -81,32 +75,25 @@ After loading your current state from MASTER.md, populate the platform's native 
 
 ## Phase 2: Task Decomposition
 
-**Goal**: Break down the transformation into manageable, trackable tasks organized in phases.
+**Goal**: Break down the transformation into manageable, trackable tasks organized in phases, with explicit parallel execution lanes.
 
 **Actions**:
 
-1. Design a phased approach based on the analysis:
-   - Identify natural phase boundaries (e.g., core libraries first, then application layer, then integrations)
-   - Order phases by dependency: foundational components before dependent ones
-   - Each phase should be independently testable/verifiable
+1. Launch `task-architect` sub-agents with the full analysis output from Phase 1. If the project is large enough to warrant multiple strategies, launch 2 agents exploring different decomposition approaches (e.g., bottom-up vs. strangler fig) and pick the better result.
 
-2. For each phase, define concrete tasks. Each task must have:
-   - A clear description of what to do
-   - Priority level (P0/P1/P2)
-   - Estimated effort (S/M/L/XL)
-   - Dependencies on other tasks
-   - Acceptance criteria: how to verify the task is done
+   If sub-agents are not available, perform the decomposition yourself.
 
-3. Map dependencies between tasks and phases using a Mermaid diagram.
+2. The decomposition must produce:
+   - Phased approach with natural phase boundaries, ordered by dependency
+   - Concrete tasks for each phase, each with: description, priority (P0/P1/P2), effort (S/M/L/XL), dependencies, acceptance criteria
+   - **Parallel execution lanes**: For each phase, group tasks that have no mutual dependencies into lanes that can run simultaneously. Assess merge risk (file overlap) between lanes.
+   - Dependency graph as a Mermaid diagram — use subgraphs to visualize parallel lanes
+   - Milestones at natural phase boundaries
 
-4. Define milestones: meaningful checkpoints where the project reaches a demonstrably better state.
-
-5. Write planning documents to `docs/plan/`:
-   - `task-breakdown.md` — All phases and tasks with full detail
-   - `dependency-graph.md` — Mermaid diagram showing task/phase dependencies
+3. Write planning documents to `docs/plan/`:
+   - `task-breakdown.md` — All phases and tasks with full detail, including parallel lane assignments
+   - `dependency-graph.md` — Mermaid diagram showing task/phase dependencies and parallel lanes
    - `milestones.md` — Milestone definitions with target criteria
-
-**On Claude Code**: If available, launch `task-architect` sub-agents to explore different decomposition strategies in parallel.
 
 **Output**: Complete `docs/plan/` directory with three documents.
 
@@ -156,6 +143,7 @@ After loading your current state from MASTER.md, populate the platform's native 
    - The cross-conversation continuity protocol (read MASTER.md first)
    - Guidance on how to update progress documents after completing each task
    - Phase-specific instructions relevant to the transformation type
+   - **Parallel execution protocol**: How to use `task-executor` sub-agents to work on independent tasks simultaneously within each phase (see Parallel Development Execution below)
    - The cleanup trigger: when all tasks are done, initiate Phase 6
 
 3. **Delegate creation to the platform's native skill-creator**:
@@ -199,6 +187,53 @@ After loading your current state from MASTER.md, populate the platform's native 
 3. Ask the user: "All preparation is complete. Ready to begin Phase 1 development?"
 
 **Output**: User confirmation to proceed with actual implementation.
+
+---
+
+## Parallel Development Execution
+
+This section defines how the generated sub-SKILL (and the agent using it) should leverage sub-agents during the actual development work. It is not a phase — it is a protocol that applies throughout the implementation.
+
+### When to Parallelize
+
+At the start of each development phase, consult `docs/plan/task-breakdown.md` for parallel lane assignments:
+- If a phase has **multiple parallel lanes**, launch one `task-executor` sub-agent per lane simultaneously
+- If a phase has **only one lane** (all tasks are sequential), execute tasks one by one — do not force parallelism
+- If the platform does not support sub-agents, execute all tasks sequentially yourself
+
+### How to Launch Parallel Task Executors
+
+For each parallel lane in the current phase:
+
+1. Prepare the input for each `task-executor` agent:
+   - Task ID and description from the plan
+   - Acceptance criteria
+   - Relevant source file paths (from `docs/analysis/module-inventory.md`)
+   - Coding standards from the sub-SKILL
+   - Summary of completed prerequisite tasks and their outputs
+
+2. Launch all lane agents **in a single message** (this is how platforms achieve true parallelism). Use worktree isolation if available to prevent file conflicts between agents.
+
+3. When all agents return, consolidate their results:
+   - Verify each agent reported DONE (not BLOCKED)
+   - If any agent is BLOCKED, resolve the blocker and re-launch only that agent
+   - If agents worked in worktrees, merge their changes sequentially, resolving any conflicts
+   - Run the project's full test suite to verify combined changes are coherent
+
+### Progress Synchronization
+
+After consolidating parallel results:
+- Verify that each agent's progress file updates are consistent
+- If agents wrote to the same progress file, reconcile the updates (agents may have stale counts)
+- Update MASTER.md with the final accurate completion counts
+- Update the platform's native task tool to reflect all completed tasks
+
+### Merge Risk Mitigation
+
+The `task-breakdown.md` includes merge risk ratings for parallel lanes. Apply these safeguards:
+- **Low risk**: Merge freely — lanes touch different files
+- **Medium risk**: Merge sequentially, run tests between each merge
+- **High risk**: Consider running these tasks sequentially instead of in parallel, or use worktree isolation with careful conflict resolution
 
 ---
 
