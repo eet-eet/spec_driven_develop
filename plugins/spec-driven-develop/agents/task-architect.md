@@ -81,6 +81,8 @@ Define milestones at natural phase boundaries. Each milestone should represent a
 
 ## Output Format
 
+This is an intermediate report returned to the orchestrating agent. The orchestrator will transform it into the final `docs/plan/` documents using templates from `references/doc-templates.md`.
+
 ```
 ## Strategy
 (chosen approach with justification)

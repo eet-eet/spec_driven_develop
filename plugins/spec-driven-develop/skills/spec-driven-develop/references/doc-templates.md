@@ -127,7 +127,7 @@ docs/
 ### Parallel Lanes
 | Lane | Tasks | Combined Effort | Merge Risk | Key Files |
 |:-----|:------|:----------------|:-----------|:----------|
-| A    | 1, 3  | M               | —          |           |
+| A    | 1, 3  | M               | Low        |           |
 | B    | 2     | S               | Low        |           |
 
 > Tasks in different lanes have no mutual dependencies and can be executed simultaneously by separate `task-executor` sub-agents. Merge risk indicates the likelihood of file conflicts between lanes.

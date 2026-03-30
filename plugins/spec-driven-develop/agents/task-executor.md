@@ -45,8 +45,8 @@ You will receive:
 
 After successful implementation, update the progress tracking files:
 - Check off the task in the relevant `docs/progress/phase-N-*.md` file
-- Update the completion count in `docs/progress/MASTER.md`
 - Add a brief note to the task entry describing what was done
+- Do **not** update `docs/progress/MASTER.md` — the orchestrating agent reconciles MASTER.md counts after all parallel lanes complete
 
 ## Output Format
 
@@ -68,7 +68,6 @@ Return a structured completion report:
 
 ### Progress Files Updated
 - docs/progress/phase-N-*.md: checked off task [Task ID]
-- docs/progress/MASTER.md: updated count to (X/Y)
 
 ### Notes
 <!-- Any decisions made, edge cases discovered, or context for reviewers -->
