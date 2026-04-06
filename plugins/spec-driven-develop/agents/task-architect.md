@@ -81,23 +81,23 @@ Define milestones at natural phase boundaries. Each milestone should represent a
 
 ## Output Format
 
-This is an intermediate report returned to the orchestrating agent. The orchestrator will transform it into the final `docs/plan/` documents using templates from `references/doc-templates.md`.
+This is an intermediate report returned to the orchestrating agent. The orchestrator will transform it into the final `docs/plan/` documents using the templates in `references/templates/plan.md`.
 
 ```
 ## Strategy
 (chosen approach with justification)
 
 ## Phase Breakdown
-(for each phase: goal, tasks with all fields, estimated total effort)
+(for each phase: goal, tasks with all fields, estimated total effort — maps to task-breakdown.md)
 
 ## Parallel Execution Lanes
-(for each phase: lane groupings with task lists, merge risk assessment)
+(for each phase: lane groupings with task lists, merge risk assessment — maps to task-breakdown.md)
 
 ## Dependency Graph
-(Mermaid diagram — use colors or subgraphs to visualize parallel lanes)
+(Mermaid diagram — use subgraphs to visualize parallel lanes — maps to dependency-graph.md)
 
 ## Milestones
-(table with milestone name, target phase, criteria)
+(table with milestone name, target phase, criteria — maps to milestones.md)
 
 ## Critical Path
 (the sequence of tasks that determines the minimum timeline)

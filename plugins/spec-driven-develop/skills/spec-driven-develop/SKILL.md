@@ -15,6 +15,18 @@ version: 1.3.0
 
 You are executing the **Spec-Driven Development** workflow — a standardized pre-development pipeline for large-scale complex tasks. Your job is to complete all preparation phases before any actual coding begins, ensuring the project has full analysis, a clear plan, trackable progress documents, and a task-specific SKILL.
 
+## Configuration
+
+| Path               | Default Value                | Purpose                                    |
+|:-------------------|:-----------------------------|:-------------------------------------------|
+| Analysis output    | `docs/analysis/`             | Phase 1 analysis documents                 |
+| Plan output        | `docs/plan/`                 | Phase 2 planning documents                 |
+| Progress output    | `docs/progress/`             | Phase 3 tracking documents (incl. MASTER.md) |
+| Archive output     | `docs/archives/<project>/`   | Phase 6 archived artifacts                 |
+| Sub-SKILL install  | Project level (auto-detect)  | Platform-specific: `.cursor/skills/`, `.claude/commands/`, or project-local |
+
+Templates for all generated documents are in `references/templates/`. Behavioral rules are in `references/behavioral-rules.md`. The parallel execution protocol is in `references/parallel-protocol.md`.
+
 ## Before You Begin: Cross-Conversation Continuity Check
 
 **CRITICAL**: Before starting any phase, check if `docs/progress/MASTER.md` already exists in the project.
@@ -64,7 +76,7 @@ After loading your current state from MASTER.md, populate the platform's native 
 
    If sub-agents are not available on the current platform, perform the analysis sequentially yourself — the scope is the same either way.
 
-2. Consolidate agent outputs and resolve any contradictions or gaps. Write analysis documents to `docs/analysis/`:
+2. Consolidate agent outputs and resolve any contradictions or gaps. Write analysis documents to `docs/analysis/` using the templates in `references/templates/analysis.md`:
    - `project-overview.md` — Architecture, tech stack, entry points, build system
    - `module-inventory.md` — Every module with: responsibility, dependencies, size, complexity rating
    - `risk-assessment.md` — Technical risks, compatibility risks, complexity hotspots
@@ -90,7 +102,7 @@ After loading your current state from MASTER.md, populate the platform's native 
    - Dependency graph as a Mermaid diagram — use subgraphs to visualize parallel lanes
    - Milestones at natural phase boundaries
 
-3. Write planning documents to `docs/plan/`:
+3. Write planning documents to `docs/plan/` using the templates in `references/templates/plan.md`:
    - `task-breakdown.md` — All phases and tasks with full detail, including parallel lane assignments
    - `dependency-graph.md` — Mermaid diagram showing task/phase dependencies and parallel lanes
    - `milestones.md` — Milestone definitions with target criteria
@@ -104,6 +116,8 @@ After loading your current state from MASTER.md, populate the platform's native 
 **Goal**: Create a document-driven progress tracking system that survives across conversations.
 
 **Actions**:
+
+Use the templates in `references/templates/progress.md` for all progress documents.
 
 1. Create the **master control file** `docs/progress/MASTER.md` with:
    - Task name and description (from Phase 0)
@@ -136,13 +150,13 @@ After loading your current state from MASTER.md, populate the platform's native 
 
 1. The sub-SKILL is **always installed at project level** (e.g., `.cursor/skills/`, `.claude/commands/`, or project-local directory). Do not ask the user for installation location. This keeps the sub-SKILL co-located with the project it serves and avoids polluting the global skill space.
 
-2. Determine what the sub-SKILL should contain:
+2. Determine what the sub-SKILL should contain (see `references/templates/sub-skill.md` for the full content outline):
    - Task-specific coding standards and conventions for the target technology
    - The cross-conversation continuity protocol (read MASTER.md first)
    - Project-specific architecture context and implementation notes
    - Guidance on how to update progress documents after completing each task
    - Phase-specific instructions relevant to the transformation type
-   - **Parallel execution protocol**: How to use `task-executor` sub-agents to work on independent tasks simultaneously within each phase (see Parallel Development Execution below)
+   - **Parallel execution protocol**: reference `references/parallel-protocol.md` for the full protocol
    - The archive trigger: when all tasks are done, initiate Phase 6
 
 3. **Delegate creation to the platform's native skill-creator**:
@@ -189,53 +203,6 @@ After loading your current state from MASTER.md, populate the platform's native 
 
 ---
 
-## Parallel Development Execution
-
-This section defines how the generated sub-SKILL (and the agent using it) should leverage sub-agents during the actual development work. It is not a phase — it is a protocol that applies throughout the implementation.
-
-### When to Parallelize
-
-At the start of each development phase, consult `docs/plan/task-breakdown.md` for parallel lane assignments:
-- If a phase has **multiple parallel lanes**, launch one `task-executor` sub-agent per lane simultaneously
-- If a phase has **only one lane** (all tasks are sequential), execute tasks one by one — do not force parallelism
-- If the platform does not support sub-agents, execute all tasks sequentially yourself
-
-### How to Launch Parallel Task Executors
-
-For each parallel lane in the current phase:
-
-1. Prepare the input for each `task-executor` agent:
-   - Task ID and description from the plan
-   - Acceptance criteria
-   - Relevant source file paths (from `docs/analysis/module-inventory.md`)
-   - Coding standards from the sub-SKILL
-   - Summary of completed prerequisite tasks and their outputs
-
-2. Launch all lane agents **in a single message** (this is how platforms achieve true parallelism). Use worktree isolation if available to prevent file conflicts between agents.
-
-3. When all agents return, consolidate their results:
-   - Verify each agent reported DONE (not BLOCKED)
-   - If any agent is BLOCKED, resolve the blocker and re-launch only that agent
-   - If agents worked in worktrees, merge their changes sequentially, resolving any conflicts
-   - Run the project's full test suite to verify combined changes are coherent
-
-### Progress Synchronization
-
-After consolidating parallel results:
-- Verify that each agent's progress file updates are consistent
-- If agents wrote to the same progress file, reconcile the updates (agents may have stale counts)
-- Update MASTER.md with the final accurate completion counts
-- Update the platform's native task tool to reflect all completed tasks
-
-### Merge Risk Mitigation
-
-The `task-breakdown.md` includes merge risk ratings for parallel lanes. Apply these safeguards:
-- **Low risk**: Merge freely — lanes touch different files
-- **Medium risk**: Merge sequentially, run tests between each merge
-- **High risk**: Consider running these tasks sequentially instead of in parallel, or use worktree isolation with careful conflict resolution
-
----
-
 ## Phase 6: Archive
 
 **Trigger**: This phase activates when ALL checkboxes in `docs/progress/MASTER.md` are marked complete (`[x]`).
@@ -246,7 +213,7 @@ The `task-breakdown.md` includes merge risk ratings for parallel lanes. Apply th
 
 1. Announce to the user that all tasks have been completed. Congratulate them.
 
-2. Determine the archive directory name from the task name established in Phase 0. Sanitize it for use as a directory name (lowercase, hyphens instead of spaces, no special characters). The archive path is: `docs/archives/<project-name>/`
+2. Determine the archive directory name from the task name established in Phase 0. Sanitize it for use as a directory name (lowercase, hyphens instead of spaces, no special characters). The archive path is: `docs/archives/<project-name>/`. See `references/templates/archive.md` for the target directory structure and index template.
 
 3. Create the archive directory structure and move all artifacts into it:
    - Move `docs/analysis/` to `docs/archives/<project-name>/analysis/`
@@ -268,20 +235,6 @@ The `task-breakdown.md` includes merge risk ratings for parallel lanes. Apply th
 
 ---
 
-## Important Behavioral Rules
+## Behavioral Rules
 
-1. **Never skip phases**. Even if you think a phase is unnecessary, at minimum create a lightweight version of its outputs.
-
-2. **Always confirm with the user** before proceeding to the next phase. Each phase boundary is a checkpoint.
-
-3. **Document everything**. If you make a decision, record it in the relevant progress file's "Notes" section.
-
-4. **Progress updates are mandatory**. After completing any task, immediately update the checkbox in the phase file AND the completion count in MASTER.md.
-
-5. **New conversation = read MASTER.md first**. This is non-negotiable. The master file is your memory across conversations.
-
-6. **Respect the user's time**. Keep summaries concise. Use bullet points and tables, not walls of text.
-
-7. **Archiving is not optional**. When all tasks are done, always enter Phase 6. Archive all artifacts to `docs/archives/` for traceability — don't leave them scattered in working directories or delete them.
-
-8. **Dual-write progress updates**. When completing a task, update both the platform's native task tool (mark as completed) AND the Markdown progress files (check the box, update counts). The native tool provides real-time visibility; the Markdown files provide cross-conversation persistence. Neither replaces the other.
+All rules in `references/behavioral-rules.md` apply to every phase. Read and follow them.

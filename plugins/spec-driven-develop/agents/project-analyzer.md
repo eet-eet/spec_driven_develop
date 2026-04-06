@@ -49,20 +49,20 @@ For each logical module/package/component:
 
 ## Output Format
 
-Structure your response as follows:
+Your output will be transformed into formal documents using the templates in `references/templates/analysis.md`. Structure your response to align with those templates:
 
 ```
 ## Technology Stack
-(table of languages, frameworks, tools with versions)
+(table of languages, frameworks, tools with versions — maps to project-overview.md)
 
 ## Module Inventory
-(for each module: path, responsibility, dependencies, size, complexity)
+(for each module: path, responsibility, dependencies, size, complexity — maps to module-inventory.md)
 
 ## Architecture
-(pattern, data flow description, cross-cutting concerns)
+(pattern, data flow description, cross-cutting concerns — maps to project-overview.md)
 
 ## Key Risks
-(ranked list with severity and mitigation suggestions)
+(ranked list with severity and mitigation suggestions — maps to risk-assessment.md)
 
 ## Essential Files
 (list of 10-15 files that are most important to understand this codebase)

@@ -1,0 +1,52 @@
+# Parallel Execution Protocol
+
+This protocol defines how the generated sub-SKILL (and the agent using it) should leverage sub-agents during actual development work. It applies throughout the implementation, not to a specific phase.
+
+---
+
+## When to Parallelize
+
+At the start of each development phase, consult `docs/plan/task-breakdown.md` for parallel lane assignments:
+- If a phase has **multiple parallel lanes**, launch one `task-executor` sub-agent per lane simultaneously
+- If a phase has **only one lane** (all tasks are sequential), execute tasks one by one — do not force parallelism
+- If the platform does not support sub-agents, execute all tasks sequentially yourself
+
+---
+
+## How to Launch Parallel Task Executors
+
+For each parallel lane in the current phase:
+
+1. Prepare the input for each `task-executor` agent:
+   - Task ID and description from the plan
+   - Acceptance criteria
+   - Relevant source file paths (from `docs/analysis/module-inventory.md`)
+   - Coding standards from the sub-SKILL
+   - Summary of completed prerequisite tasks and their outputs
+
+2. Launch all lane agents **in a single message** (this is how platforms achieve true parallelism). Use worktree isolation if available to prevent file conflicts between agents.
+
+3. When all agents return, consolidate their results:
+   - Verify each agent reported DONE (not BLOCKED)
+   - If any agent is BLOCKED, resolve the blocker and re-launch only that agent
+   - If agents worked in worktrees, merge their changes sequentially, resolving any conflicts
+   - Run the project's full test suite to verify combined changes are coherent
+
+---
+
+## Progress Synchronization
+
+After consolidating parallel results:
+- Verify that each agent's progress file updates are consistent
+- If agents wrote to the same progress file, reconcile the updates (agents may have stale counts)
+- Update MASTER.md with the final accurate completion counts
+- Update the platform's native task tool to reflect all completed tasks
+
+---
+
+## Merge Risk Mitigation
+
+The `task-breakdown.md` includes merge risk ratings for parallel lanes. Apply these safeguards:
+- **Low risk**: Merge freely — lanes touch different files
+- **Medium risk**: Merge sequentially, run tests between each merge
+- **High risk**: Consider running these tasks sequentially instead of in parallel, or use worktree isolation with careful conflict resolution
