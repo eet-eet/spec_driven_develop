@@ -1,0 +1,20 @@
+{
+  "name": "spec-driven-develop",
+  "interface": {
+    "displayName": "Spec-Driven Develop"
+  },
+  "plugins": [
+    {
+      "name": "spec-driven-develop",
+      "source": {
+        "source": "local",
+        "path": "./plugins/spec-driven-develop"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

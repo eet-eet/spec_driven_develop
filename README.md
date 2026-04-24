@@ -128,7 +128,7 @@ The SKILL prompt is written in a generic, platform-neutral way. It gracefully de
 **Tested platforms with install scripts:**
 
 - **Claude Code** — installed as a plugin (with enhanced agent/command support)
-- **Codex (OpenAI)** — installed as a skill
+- **Codex (OpenAI)** — installed as a Codex plugin or directly as a skill
 - **Cursor** — installed as a global or project-level skill
 
 **Any other agent** — copy `SKILL.md` (plus the `references/` directory if you want full template and protocol support) to wherever your agent reads instructions. The files have no external dependencies and no platform-specific logic. Works with Windsurf, Cline, Aider, Continue, Roo Code, Augment, or any other coding agent that reads Markdown-based skills or system prompts.
@@ -145,6 +145,8 @@ The SKILL prompt is written in a generic, platform-neutral way. It gracefully de
 After installation, run `/reload-plugins` to activate.
 
 ### Codex CLI
+
+This repository now includes Codex plugin metadata at `.agents/plugins/marketplace.json` and `plugins/spec-driven-develop/.codex-plugin/plugin.json`. If your Codex client supports repo-local plugin marketplaces, enable the `spec-driven-develop` plugin from this repository.
 
 Use the built-in skill installer (inside a Codex session):
 
@@ -237,7 +239,12 @@ When all tasks are marked complete, the agent archives all workflow artifacts (a
 
 ```
 spec_driven_develop/
-├── plugins/spec-driven-develop/              # Self-contained Claude Code plugin
+├── .agents/plugins/marketplace.json          # Codex repo-local plugin marketplace
+├── plugins/spec-driven-develop/              # Self-contained Claude Code and Codex plugin
+│   ├── .claude-plugin/
+│   │   └── plugin.json                       # Claude Code plugin manifest
+│   ├── .codex-plugin/
+│   │   └── plugin.json                       # Codex plugin manifest
 │   ├── skills/
 │   │   ├── spec-driven-develop/
 │   │   │   ├── SKILL.md                      # Core workflow — works on ANY platform
@@ -268,7 +275,7 @@ spec_driven_develop/
 └── LICENSE
 ```
 
-The essential files for cross-platform use are the `SKILL.md` files and the `references/` directory. Everything else — agents, commands, plugin manifests — is platform-specific enhancement for Claude Code.
+The essential files for cross-platform use are the `SKILL.md` files and the `references/` directory. Everything else — agents, commands, plugin manifests, and marketplace metadata — is platform-specific enhancement for Claude Code or Codex.
 
 ## Star History
 

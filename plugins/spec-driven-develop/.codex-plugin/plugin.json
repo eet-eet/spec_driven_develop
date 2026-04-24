@@ -1,0 +1,42 @@
+{
+  "name": "spec-driven-develop",
+  "version": "1.8.0",
+  "description": "Two complementary AI agent skills for spec-driven development and structured deep discussion.",
+  "author": {
+    "name": "zhu1090093659",
+    "url": "https://github.com/zhu1090093659"
+  },
+  "homepage": "https://github.com/zhu1090093659/spec_driven_develop",
+  "repository": "https://github.com/zhu1090093659/spec_driven_develop",
+  "license": "MIT",
+  "keywords": [
+    "spec-driven",
+    "workflow",
+    "planning",
+    "task-decomposition",
+    "project-analysis",
+    "deep-discuss",
+    "brainstorming",
+    "problem-analysis"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Spec-Driven Develop",
+    "shortDescription": "Architecture-first planning and structured technical discussion for AI coding agents.",
+    "longDescription": "Spec-Driven Develop adds two Markdown-based workflows for Codex: a seven-phase pre-development pipeline for large project transformations, and Deep Discuss for disciplined problem analysis, brainstorming, and solution design.",
+    "developerName": "zhu1090093659",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/zhu1090093659/spec_driven_develop",
+    "defaultPrompt": [
+      "Use spec-driven development to plan this migration.",
+      "Help me analyze this technical problem deeply.",
+      "Create a phased implementation plan for this refactor."
+    ],
+    "brandColor": "#3B82F6"
+  }
+}

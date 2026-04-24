@@ -128,7 +128,7 @@ SKILL 的 prompt 以通用、平台中立的方式编写。在缺少某些能力
 **已测试并提供安装脚本的平台：**
 
 - **Claude Code** — 以插件形式安装（支持增强的 Agent/命令能力）
-- **Codex (OpenAI)** — 以 Skill 形式安装
+- **Codex (OpenAI)** — 以 Codex 插件形式安装，或直接以 Skill 形式安装
 - **Cursor** — 以全局或项目级 Skill 形式安装
 
 **其他任意 Agent** — 把 `SKILL.md`（如果需要完整的模板和协议支持，再加上 `references/` 目录）复制到你的 Agent 读取指令的位置。这些文件没有外部依赖，没有平台特定逻辑。Windsurf、Cline、Aider、Continue、Roo Code、Augment，或其他任何能读 Markdown 技能/系统提示词的 Coding Agent，都能直接使用。
@@ -145,6 +145,8 @@ SKILL 的 prompt 以通用、平台中立的方式编写。在缺少某些能力
 安装完成后，执行 `/reload-plugins` 激活。
 
 ### Codex CLI
+
+本仓库现在已经包含 Codex 插件元数据：`.agents/plugins/marketplace.json` 和 `plugins/spec-driven-develop/.codex-plugin/plugin.json`。如果你的 Codex 客户端支持仓库级本地插件市场，可以直接从该仓库启用 `spec-driven-develop` 插件。
 
 在 Codex 会话中使用内置的 Skill 安装器：
 
@@ -237,7 +239,12 @@ python scripts/export-progress.py docs/progress/
 
 ```
 spec_driven_develop/
-├── plugins/spec-driven-develop/              # 独立的 Claude Code 插件
+├── .agents/plugins/marketplace.json          # Codex 仓库级插件市场入口
+├── plugins/spec-driven-develop/              # 独立的 Claude Code 与 Codex 插件
+│   ├── .claude-plugin/
+│   │   └── plugin.json                       # Claude Code 插件清单
+│   ├── .codex-plugin/
+│   │   └── plugin.json                       # Codex 插件清单
 │   ├── skills/
 │   │   ├── spec-driven-develop/
 │   │   │   ├── SKILL.md                      # 核心工作流——全平台通用
@@ -268,7 +275,7 @@ spec_driven_develop/
 └── LICENSE
 ```
 
-跨平台使用的核心文件是各 `SKILL.md` 文件和 `references/` 目录。其他的——agents、commands、插件清单——都是 Claude Code 平台上的增强功能。
+跨平台使用的核心文件是各 `SKILL.md` 文件和 `references/` 目录。其他的——agents、commands、插件清单、marketplace 元数据——都是 Claude Code 或 Codex 平台上的增强功能。
 
 ## Star History
 
